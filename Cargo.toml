@@ -11,3 +11,6 @@ license     = "MIT OR Apache-2.0"
 
 [dependencies]
 
+[features]
+esp32s3box = []
+esp32s3box3 = []
