@@ -37,62 +37,193 @@ impl DisplayConfig {
 }
 
 #[macro_export]
+macro_rules! with_lcd_spi_pins {
+    (BoardType::ESP32S3Box, $peripherals:ident) => {
+        (
+            .with_sck($peripherals.GPIO7)
+            .with_mosi($peripherals.GPIO6)
+            .with_cs($peripherals.GPIO5)
+        )
+    };
+    (BoardType::ESP32C6DevKitC1, $peripherals:ident) => {
+        (
+            .with_sck($peripherals.GPIO6)
+            .with_mosi($peripherals.GPIO7)
+            .with_cs($peripherals.GPIO20)
+        )
+    };
+    (BoardType::M5StackCoreS3, $peripherals:ident) => {
+        (
+            .with_sck($peripherals.GPIO36)
+            .with_mosi($peripherals.GPIO37)
+            .with_cs($peripherals.GPIO3)
+        )
+    };
+    (BoardType::M5StackFire, $peripherals:ident) => {
+        (
+            .with_sck($peripherals.GPIO18)
+            .with_mosi($peripherals.GPIO23)
+            .with_cs($peripherals.GPIO5)
+        )
+    };
+}
+
+
+#[macro_export]
+macro_rules! lcd_display_interface {
+    ($board:expr, $peripherals:ident, $spi:expr) => {{
+        let lcd_dc = match $board {
+            BoardType::ESP32S3Box => Output::new($peripherals.GPIO4, Level::Low),
+            // BoardType::ESP32C6DevKitC1 => Output::new($peripherals.GPIO21, Level::Low),
+            // BoardType::M5StackCoreS3 => Output::new($peripherals.GPIO35, Level::Low),
+            _ => panic!("Board not supported!"),
+        };
+
+        display_interface_spi_dma::new_no_cs(LCD_MEMORY_SIZE, $spi, lcd_dc)
+    }};
+}
+
+
+
+#[macro_export]
+macro_rules! lcd_spi {
+    (BoardType::ESP32S3Box, $peripherals:ident, $dma_channel:expr) => {
+        Spi::new_with_config(
+            $peripherals.SPI2,
+            esp_hal::spi::master::Config {
+                frequency: 40u32.MHz(),
+                ..esp_hal::spi::master::Config::default()
+            },
+        )
+        .with_sck($peripherals.GPIO7)
+        .with_mosi($peripherals.GPIO6)
+        .with_cs($peripherals.GPIO5)
+        .with_dma($dma_channel.configure(false, DmaPriority::Priority0))
+    };
+    (BoardType::ESP32C6DevKitC1, $peripherals:ident, $dma_channel:expr) => {
+        Spi::new_with_config(
+            $peripherals.SPI2,
+            esp_hal::spi::master::Config {
+                frequency: 40u32.MHz(),
+                ..esp_hal::spi::master::Config::default()
+            },
+        )
+        .with_sck($peripherals.GPIO6)
+        .with_mosi($peripherals.GPIO7)
+        .with_cs($peripherals.GPIO20)
+        .with_dma($dma_channel.configure(false, DmaPriority::Priority0))
+    };
+    (BoardType::M5StackCoreS3, $peripherals:ident, $dma_channel:expr) => {
+        Spi::new_with_config(
+            $peripherals.SPI2,
+            esp_hal::spi::master::Config {
+                frequency: 40u32.MHz(),
+                ..esp_hal::spi::master::Config::default()
+            },
+        )
+        .with_sck($peripherals.GPIO36)
+        .with_mosi($peripherals.GPIO37)
+        .with_cs($peripherals.GPIO3)
+        .with_dma($dma_channel.configure(false, DmaPriority::Priority0))
+    };
+}
+
+#[macro_export]
+macro_rules! lcd_reset_pin {
+    ($board:expr, $peripherals:ident) => {
+        match $board {
+            BoardType::ESP32S3Box => Output::new($peripherals.GPIO48, Level::Low),
+            BoardType::ESP32C6DevKitC1 => Output::new($peripherals.GPIO3, Level::Low),
+            BoardType::M5StackCoreS3 => Output::new($peripherals.GPIO15, Level::Low),
+            _ => panic!("Board not supported!"),
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! lcd_backlight_init {
+    ($board:expr, $peripherals:ident) => {{
+        match $board {
+            BoardType::ESP32S3Box => {
+                let mut backlight = Output::new($peripherals.GPIO45, Level::Low);
+                backlight.set_high(); // Turn on backlight
+                Some(backlight)
+            }
+            // BoardType::ESP32C6DevKitC1 => {
+            //     let mut backlight = Output::new($peripherals.GPIO4, Level::Low);
+            //     backlight.set_high(); // Turn on backlight
+            //     Some(backlight)
+            // }
+            // BoardType::M5StackCoreS3 => {
+            //     let mut backlight = Output::new($peripherals.GPIO0, Level::Low);
+            //     backlight.set_high(); // Turn on backlight
+            //     Some(backlight)
+            // }
+            _ => {
+                // No backlight control for this board
+                None
+            }
+        }
+    }};
+}
+
+#[macro_export]
 macro_rules! lcd_gpios {
-    (BoardType::ESP32C3LcdKit, $io:ident) => {
+    // (BoardType::ESP32C3LcdKit, $peripherals:ident) => {
+    //     (
+    //         $peripherals.GPIO1,     // lcd_sclk
+    //         $peripherals.GPIO0,     // lcd_mosi
+    //         $peripherals.GPIO7,    // lcd_cs
+    //         $peripherals.GPIO4,     // lcd_miso
+    //         $peripherals.GPIO2.into_push_pull_output(),    // lcd_dc
+    //         $peripherals.GPIO5.into_push_pull_output(),     // lcd_backlight
+    //         $peripherals.GPIO8.into_push_pull_output()      // lcd_reset
+    //     )
+    // };
+    // (BoardType::ESP32C6DevKitC1, $io:ident) => {
+    //     (
+    //         $io.pins.gpio6,     // lcd_sclk
+    //         $io.pins.gpio7,     // lcd_mosi
+    //         $io.pins.gpio20,    // lcd_cs
+    //         $io.pins.gpio0,     // lcd_miso
+    //         $io.pins.gpio21.into_push_pull_output(),    // lcd_dc
+    //         $io.pins.gpio4.into_push_pull_output(),     // lcd_backlight
+    //         $io.pins.gpio3.into_push_pull_output()      // lcd_reset
+    //     )
+    // };
+    (BoardType::ESP32S3Box, $peripherals:ident) => {
         (
-            $io.pins.gpio1,     // lcd_sclk
-            $io.pins.gpio0,     // lcd_mosi
-            $io.pins.gpio7,    // lcd_cs
-            $io.pins.gpio4,     // lcd_miso
-            $io.pins.gpio2.into_push_pull_output(),    // lcd_dc
-            $io.pins.gpio5.into_push_pull_output(),     // lcd_backlight
-            $io.pins.gpio8.into_push_pull_output()      // lcd_reset
+            $peripherals.GPIO7,     // lcd_sclk
+            $peripherals.GPIO6,     // lcd_mosi
+            $peripherals.GPIO5,    // lcd_cs
+            $peripherals.GPIO2,     // lcd_miso
+            Output::new($peripherals.GPIO4, Level::Low),    // lcd_dc
+            Output::new($peripherals.GPIO45, Level::Low),     // lcd_backlight
+            Output::new($peripherals.GPIO48, Level::Low),      // lcd_reset
         )
     };
-    (BoardType::ESP32C6DevKitC1, $io:ident) => {
-        (
-            $io.pins.gpio6,     // lcd_sclk
-            $io.pins.gpio7,     // lcd_mosi
-            $io.pins.gpio20,    // lcd_cs
-            $io.pins.gpio0,     // lcd_miso
-            $io.pins.gpio21.into_push_pull_output(),    // lcd_dc
-            $io.pins.gpio4.into_push_pull_output(),     // lcd_backlight
-            $io.pins.gpio3.into_push_pull_output()      // lcd_reset
-        )
-    };
-    (BoardType::ESP32S3Box, $io:ident) => {
-        (
-            $io.pins.gpio7,     // lcd_sclk
-            $io.pins.gpio6,     // lcd_mosi
-            $io.pins.gpio5,    // lcd_cs
-            $io.pins.gpio2,     // lcd_miso
-            $io.pins.gpio4.into_push_pull_output(),    // lcd_dc
-            $io.pins.gpio45.into_push_pull_output(),     // lcd_backlight
-            $io.pins.gpio48.into_push_pull_output()      // lcd_reset
-        )
-    };
-    (BoardType::M5StackCoreS3, $io:ident) => {
-        (
-            $io.pins.gpio36,    // lcd_sclk
-            $io.pins.gpio37,    // lcd_mosi
-            $io.pins.gpio3,     // lcd_cs
-            $io.pins.gpio6,     // lcd_miso
-            $io.pins.gpio35.into_push_pull_output(),    // lcd_dc
-            $io.pins.gpio0.into_push_pull_output(),    // lcd_backlight
-            $io.pins.gpio15.into_push_pull_output()     // lcd_reset
-        )
-    };
-    (BoardType::M5StackFire, $io:ident) => {
-        (
-            $io.pins.gpio18,    // lcd_sclk
-            $io.pins.gpio23,    // lcd_mosi
-            $io.pins.gpio5,     // lcd_cs
-            $io.pins.gpio19,    // lcd_miso
-            $io.pins.gpio26.into_push_pull_output(),    // lcd_dc
-            $io.pins.gpio14.into_push_pull_output(),    // lcd_backlight
-            $io.pins.gpio27.into_push_pull_output()     // lcd_reset
-        )
-    };
+    // (BoardType::M5StackCoreS3, $io:ident) => {
+    //     (
+    //         $io.pins.gpio36,    // lcd_sclk
+    //         $io.pins.gpio37,    // lcd_mosi
+    //         $io.pins.gpio3,     // lcd_cs
+    //         $io.pins.gpio6,     // lcd_miso
+    //         $io.pins.gpio35.into_push_pull_output(),    // lcd_dc
+    //         $io.pins.gpio0.into_push_pull_output(),    // lcd_backlight
+    //         $io.pins.gpio15.into_push_pull_output()     // lcd_reset
+    //     )
+    // };
+    // (BoardType::M5StackFire, $io:ident) => {
+    //     (
+    //         $io.pins.gpio18,    // lcd_sclk
+    //         $io.pins.gpio23,    // lcd_mosi
+    //         $io.pins.gpio5,     // lcd_cs
+    //         $io.pins.gpio19,    // lcd_miso
+    //         $io.pins.gpio26.into_push_pull_output(),    // lcd_dc
+    //         $io.pins.gpio14.into_push_pull_output(),    // lcd_backlight
+    //         $io.pins.gpio27.into_push_pull_output()     // lcd_reset
+    //     )
+    // };
 }
 
 #[macro_export]
