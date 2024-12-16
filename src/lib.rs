@@ -18,12 +18,18 @@ pub struct DisplayConfig {
 
 impl DisplayConfig {
     pub fn default() -> DisplayConfig {
-        DisplayConfig { h_res: 320, v_res: 240 }
+        DisplayConfig {
+            h_res: 320,
+            v_res: 240,
+        }
     }
 
     pub fn for_board(board: BoardType) -> DisplayConfig {
         match board {
-            BoardType::ESP32C3LcdKit => DisplayConfig { h_res: 240, v_res: 240 },
+            BoardType::ESP32C3LcdKit => DisplayConfig {
+                h_res: 240,
+                v_res: 240,
+            },
             _ => DisplayConfig::default(),
         }
     }
