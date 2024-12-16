@@ -45,3 +45,7 @@ macro_rules! shared_lcd_display {
             .reset_pin($reset_pin)
     }};
 }
+
+pub use {
+    shared_lcd_spi_dma, shared_lcd_spi, shared_lcd_display_interface, shared_lcd_display
+};

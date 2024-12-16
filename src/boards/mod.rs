@@ -1,6 +1,3 @@
-#[macro_use]
-pub mod common;
-
 #[cfg(feature = "esp32s3box")]
 #[macro_use]
 pub mod esp32s3box;
