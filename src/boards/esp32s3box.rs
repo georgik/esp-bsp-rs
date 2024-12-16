@@ -27,7 +27,7 @@ macro_rules! lcd_reset_pin {
 #[macro_export]
 macro_rules! lcd_backlight_init {
     ($peripherals:ident) => {{
-        let mut backlight = Output::new($peripherals.GPIO45, Level::Low);
+        let mut backlight = Output::new($peripherals.GPIO47, Level::Low);
         backlight.set_high();
         Some(backlight)
     }};
