@@ -1,48 +1,20 @@
 #[macro_export]
 macro_rules! lcd_spi {
-    ($peripherals:ident, $dma_channel:expr) => {
-        Spi::new_with_config(
-            $peripherals.SPI2,
-            esp_hal::spi::master::Config {
-                frequency: 40u32.MHz(),
-                ..esp_hal::spi::master::Config::default()
-            },
+    ($peripherals:ident) => {
+        shared_lcd_spi!(
+            $peripherals,
+            $peripherals.GPIO7,  // SCK
+            $peripherals.GPIO6,  // MOSI
+            $peripherals.GPIO5   // CS
         )
-        .with_sck($peripherals.GPIO7)
-        .with_mosi($peripherals.GPIO6)
-        .with_cs($peripherals.GPIO5)
-        .with_dma($dma_channel.configure(false, DmaPriority::Priority0))
     };
 }
 
 #[macro_export]
-macro_rules! lcd_dma_spi {
-    ($peripherals:ident) => {{
-        // Initialize DMA
-        let dma = Dma::new($peripherals.DMA);
-        let dma_channel = dma.channel0;
-
-        // Return SPI initialized with DMA
-        Spi::new_with_config(
-            $peripherals.SPI2,
-            esp_hal::spi::master::Config {
-                frequency: 40u32.MHz(),
-                ..esp_hal::spi::master::Config::default()
-            },
-        )
-        .with_sck($peripherals.GPIO7)
-        .with_mosi($peripherals.GPIO6)
-        .with_cs($peripherals.GPIO5)
-        .with_dma(dma_channel.configure(false, DmaPriority::Priority0))
-    }};
-}
-
-#[macro_export]
 macro_rules! lcd_display_interface {
-    ($peripherals:ident, $spi:expr) => {{
-        let lcd_dc = Output::new($peripherals.GPIO4, Level::Low);
-        display_interface_spi_dma::new_no_cs(LCD_MEMORY_SIZE, $spi, lcd_dc)
-    }};
+    ($peripherals:ident, $spi:expr) => {
+        shared_lcd_display_interface!($peripherals, $spi, $peripherals.GPIO4)
+    };
 }
 
 #[macro_export]
@@ -65,27 +37,29 @@ macro_rules! lcd_backlight_init {
 macro_rules! i2c_init {
     ($peripherals:ident) => {{
         I2c::new($peripherals.I2C0, esp_hal::i2c::master::Config::default())
-            .with_sda($peripherals.GPIO12)
-            .with_scl($peripherals.GPIO11)
+            .with_sda($peripherals.GPIO8)
+            .with_scl($peripherals.GPIO18)
     }};
 }
 
 #[macro_export]
 macro_rules! lcd_display {
-    ($peripherals:ident, $di:expr, $orientation:expr) => {{
-        mipidsi::Builder::new(mipidsi::models::ILI9341Rgb565, $di)
-            .display_size(240, 320)
-            .orientation(
-                mipidsi::options::Orientation::new()
-                    .flip_vertical()
-                    .flip_horizontal(),
-            )
-            .color_order(mipidsi::options::ColorOrder::Bgr)
-            .reset_pin(lcd_reset_pin!($peripherals))
-    }};
+    ($peripherals:ident, $di:expr) => {
+        shared_lcd_display!(
+            $di,
+            mipidsi::models::ILI9341Rgb565,
+            240,
+            320,
+            mipidsi::options::Orientation::new()
+                .flip_vertical()
+                .flip_horizontal(),
+            mipidsi::options::ColorOrder::Bgr,
+            lcd_reset_pin!($peripherals)
+        )
+    };
 }
 
 pub use {
-    i2c_init, lcd_backlight_init, lcd_display, lcd_display_interface, lcd_dma_spi, lcd_reset_pin,
+    i2c_init, lcd_backlight_init, lcd_display, lcd_display_interface, lcd_reset_pin,
     lcd_spi,
 };
