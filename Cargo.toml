@@ -15,3 +15,4 @@ license     = "MIT OR Apache-2.0"
 esp32s3box = []
 esp32s3box3 = []
 m5stackcores3 = []
+esp32c6devkitc1 = []
