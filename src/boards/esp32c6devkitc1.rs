@@ -49,9 +49,10 @@ macro_rules! lcd_display {
             $di,
             mipidsi::models::ILI9341Rgb565,
             240,
-            240,
-            mipidsi::options::Orientation::new(), // Default orientation for C6 DevKit
-            mipidsi::options::ColorOrder::Bgr,
+            320,
+            mipidsi::options::Orientation::new()
+                .rotate(mipidsi::options::Rotation::Deg90),
+            mipidsi::options::ColorOrder::Rgb,
             lcd_reset_pin!($peripherals)
         )
     };
