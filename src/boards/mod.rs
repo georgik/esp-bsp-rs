@@ -1,19 +1,22 @@
-#[cfg(feature = "esp32c6devkitc1")]
-pub mod esp32c6devkitc1;
+#[cfg(feature = "esp32-c6-devkitc-1")]
+pub mod esp32_c6_devkitc_1;
 
-#[cfg(feature = "esp32s3box")]
+#[cfg(feature = "esp32-s3-box")]
 #[macro_use]
-pub mod esp32s3box;
+pub mod esp32_s3_box;
 
-#[cfg(feature = "esp32s3box3")]
+#[cfg(feature = "esp32-s3-box-3")]
 #[macro_use]
-pub mod esp32s3box3;
+pub mod esp32_s3_box_3;
 
-#[cfg(feature = "m5stackcores3")]
+#[cfg(feature = "m5stack-cores3")]
 #[macro_use]
-pub mod m5stackcores3;
+pub mod m5stack_cores3;
 
+#[cfg(feature = "waveshare-esp32-c6-lcd-1-47")]
+#[macro_use]
+pub mod waveshare_esp32_c6_lcd_1_47;
 
-#[cfg(feature = "custom_board")]
+#[cfg(feature = "custom-board")]
 #[macro_use]
 pub mod custom_board;

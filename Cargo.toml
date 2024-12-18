@@ -1,6 +1,6 @@
 [package]
 name    = "esp-bsp"
-version = "0.3.1"
+version = "0.4.0"
 authors = [
     "Juraj Michálek <juraj.michalek@espressif.com>"
 ]
@@ -12,10 +12,11 @@ license     = "MIT OR Apache-2.0"
 [dependencies]
 
 [features]
-esp32s3box = []
-esp32s3box3 = []
-m5stackcores3 = []
-esp32c6devkitc1 = []
+esp32-s3-box = []
+esp32-s3-box-3 = []
+m5stack-cores3 = []
+esp32-c6-devkitc-1 = []
+waveshare-esp32-c6-lcd-1-47 = []
 
 # Custom boards are in concept stage and does not work
-custom_board = []
+custom-board = []
