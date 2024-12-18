@@ -27,9 +27,7 @@ macro_rules! lcd_reset_pin {
 #[macro_export]
 macro_rules! lcd_backlight_init {
     ($peripherals:ident) => {{
-        let mut backlight = Output::new($peripherals.GPIO0, Level::Low);
-        backlight.set_high();
-        Some(backlight)
+        None()
     }};
 }
 
@@ -37,8 +35,8 @@ macro_rules! lcd_backlight_init {
 macro_rules! i2c_init {
     ($peripherals:ident) => {{
         I2c::new($peripherals.I2C0, esp_hal::i2c::master::Config::default())
-            .with_sda($peripherals.GPIO8)
-            .with_scl($peripherals.GPIO18)
+            .with_sda($peripherals.GPIO12)
+            .with_scl($peripherals.GPIO11)
     }};
 }
 
@@ -50,12 +48,11 @@ macro_rules! lcd_display {
             mipidsi::models::ILI9342CRgb565,
             320,
             240,
-            mipidsi::options::Orientation::new()
-                .flip_vertical()
-                .flip_horizontal(), // Orientation for M5Stack CoreS3
-            mipidsi::options::ColorOrder::Rgb,
+            mipidsi::options::Orientation::new(),
+            mipidsi::options::ColorOrder::Bgr,
             lcd_reset_pin!($peripherals)
         )
+        .invert_colors(mipidsi::options::ColorInversion::Inverted)
     };
 }
 
