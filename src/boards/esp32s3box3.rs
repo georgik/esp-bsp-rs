@@ -20,14 +20,14 @@ macro_rules! lcd_display_interface {
 #[macro_export]
 macro_rules! lcd_reset_pin {
     ($peripherals:ident) => {
-        Output::new($peripherals.GPIO48, Level::Low)
+        OutputOpenDrain::new($peripherals.GPIO48, Level::High, Pull::Up)
     };
 }
 
 #[macro_export]
 macro_rules! lcd_backlight_init {
     ($peripherals:ident) => {{
-        let mut backlight = Output::new($peripherals.GPIO45, Level::Low);
+        let mut backlight = Output::new($peripherals.GPIO47, Level::High);
         backlight.set_high();
         Some(backlight)
     }};
@@ -50,7 +50,10 @@ macro_rules! lcd_display {
             mipidsi::models::ILI9342CRgb565,
             320,
             240,
-            mipidsi::options::Orientation::new(), // Default orientation
+            mipidsi::options::Orientation::new()
+                .flip_vertical()
+                .flip_horizontal()
+            ,
             mipidsi::options::ColorOrder::Bgr,
             lcd_reset_pin!($peripherals)
         )
