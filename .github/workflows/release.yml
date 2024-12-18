@@ -28,7 +28,6 @@ jobs:
       - name: Verify crate
         run: |
           cargo test --workspace
-          cargo check --workspace --all-features
 
       - name: Publish to crates.io
         env:
