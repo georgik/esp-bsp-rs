@@ -1,0 +1,36 @@
+name: Publish Crate
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Triggers workflow on version tags, e.g., v1.0.0
+
+jobs:
+  release:
+    name: Publish to crates.io
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: esp-rs/xtensa-toolchain@v1.5
+        with:
+          default: true
+          version: '1.82.0'
+          buildtargets: esp32c6
+          ldproxy: false
+
+      - name: Enable caching
+        uses: Swatinem/rust-cache@v2
+
+      - name: Verify crate
+        run: |
+          cargo test --workspace
+          cargo check --workspace --all-features
+
+      - name: Publish to crates.io
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+        run: cargo publish --workspace --all-features
