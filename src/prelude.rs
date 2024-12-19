@@ -1,5 +1,5 @@
 pub use crate::shared::{
-    shared_lcd_display, shared_lcd_display_interface,shared_lcd_spi_dma,  shared_lcd_spi,
+    shared_lcd_display, shared_lcd_display_interface,  shared_lcd_spi,
 };
 
 #[cfg(feature = "esp32-c3-devkit-rust")]

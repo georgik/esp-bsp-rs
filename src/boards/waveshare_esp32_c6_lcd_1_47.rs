@@ -3,6 +3,7 @@ macro_rules! lcd_spi {
     ($peripherals:ident) => {
         shared_lcd_spi!(
             $peripherals,
+            Dma::new($peripherals.DMA).dma0,
             $peripherals.GPIO7,  // SCK
             $peripherals.GPIO6,  // MOSI
             $peripherals.GPIO14  // CS

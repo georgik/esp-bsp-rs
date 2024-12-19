@@ -3,6 +3,7 @@ macro_rules! lcd_spi {
     ($peripherals:ident) => {
         shared_lcd_spi!(
             $peripherals,
+            Dma::new($peripherals.DMA).spi2channel,
             $peripherals.GPIO15,  // SCK
             $peripherals.GPIO9,  // MOSI
             $peripherals.GPIO11  // CS
@@ -27,7 +28,7 @@ macro_rules! lcd_reset_pin {
 #[macro_export]
 macro_rules! lcd_backlight_init {
     ($peripherals:ident) => {{
-        let mut backlight = Output::new($peripherals.GPIO5, Level::Low);
+        let mut backlight = Output::new($peripherals.GPIO6, Level::Low);
         backlight.set_high();
         Some(backlight)
     }};
@@ -49,7 +50,7 @@ macro_rules! lcd_display {
             $di,
             mipidsi::models::ILI9341Rgb565,
             240,
-            240,
+            320,
             mipidsi::options::Orientation::new()
                 .flip_vertical(),
                 //.rotate(mipidsi::options::Rotation::Deg90),
