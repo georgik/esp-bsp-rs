@@ -20,6 +20,9 @@ esp32-c3-lcdkit = []
 esp32-c6-devkitc-1 = []
 waveshare-esp32-c6-lcd-1-47 = []
 
+# ESP32-S2 = []
+esp32-s2-kaluga = []
+
 # ESP32-S3
 esp32-s3-box = []
 esp32-s3-box-3 = []

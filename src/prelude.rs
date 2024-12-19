@@ -17,6 +17,11 @@ pub use crate::boards::esp32_c6_devkitc_1::{
     i2c_init, lcd_backlight_init, lcd_display, lcd_display_interface, lcd_reset_pin, lcd_spi,
 };
 
+#[cfg(feature = "esp32-s2-kaluga")]
+pub use crate::boards::esp32_s2_kaluga::{
+    i2c_init, lcd_backlight_init, lcd_display, lcd_display_interface, lcd_reset_pin, lcd_spi,
+};
+
 #[cfg(feature = "esp32-s3-box")]
 pub use crate::boards::esp32_s3_box::{
     i2c_init, lcd_backlight_init, lcd_display, lcd_display_interface, lcd_reset_pin, lcd_spi,

@@ -7,6 +7,10 @@ pub mod esp32_c3_lcdkit;
 #[cfg(feature = "esp32-c6-devkitc-1")]
 pub mod esp32_c6_devkitc_1;
 
+#[cfg(feature = "esp32-s2-kaluga")]
+#[macro_use]
+pub mod esp32_s2_kaluga;
+
 #[cfg(feature = "esp32-s3-box")]
 #[macro_use]
 pub mod esp32_s3_box;
