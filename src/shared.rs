@@ -1,5 +1,5 @@
 #[macro_export]
-macro_rules! shared_lcd_spi_dma {
+macro_rules! shared_lcd_spi {
     ($peripherals:ident, $dma_channel:expr, $sck:expr, $mosi:expr, $cs:expr) => {
         Spi::new_with_config(
             $peripherals.SPI2,
@@ -13,18 +13,6 @@ macro_rules! shared_lcd_spi_dma {
         .with_cs($cs)
         .with_dma($dma_channel.configure(false, DmaPriority::Priority0))
     };
-}
-
-#[macro_export]
-macro_rules! shared_lcd_spi {
-    ($peripherals:ident, $sck:expr, $mosi:expr, $cs:expr) => {{
-        // Initialize DMA
-        let dma = Dma::new($peripherals.DMA);
-        let dma_channel = dma.channel0;
-
-        // Return SPI initialized with DMA
-        shared_lcd_spi_dma!($peripherals, dma_channel, $sck, $mosi, $cs)
-    }};
 }
 
 #[macro_export]
@@ -47,5 +35,5 @@ macro_rules! shared_lcd_display {
 }
 
 pub use {
-    shared_lcd_spi_dma, shared_lcd_spi, shared_lcd_display_interface, shared_lcd_display
+    shared_lcd_spi, shared_lcd_display_interface, shared_lcd_display
 };
