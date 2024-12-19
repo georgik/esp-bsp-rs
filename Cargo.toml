@@ -12,11 +12,18 @@ license     = "MIT OR Apache-2.0"
 [dependencies]
 
 [features]
+# ESP32-C3
+esp32-c3-devkit-rust = []
+esp32-c3-lcdkit = []
+
+# ESP32-C6
+esp32-c6-devkitc-1 = []
+waveshare-esp32-c6-lcd-1-47 = []
+
+# ESP32-S3
 esp32-s3-box = []
 esp32-s3-box-3 = []
 m5stack-cores3 = []
-esp32-c6-devkitc-1 = []
-waveshare-esp32-c6-lcd-1-47 = []
 
 # Custom boards are in concept stage and does not work
 custom-board = []

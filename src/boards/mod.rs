@@ -1,3 +1,9 @@
+#[cfg(feature = "esp32-c3-devkit-rust")]
+pub mod esp32_c3_devkit_rust;
+
+#[cfg(feature = "esp32-c3-lcdkit")]
+pub mod esp32_c3_lcdkit;
+
 #[cfg(feature = "esp32-c6-devkitc-1")]
 pub mod esp32_c6_devkitc_1;
 
